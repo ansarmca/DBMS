@@ -1,0 +1,187 @@
+BOOKS TABLE:
+select * from books;
++--------+------------------------+---------------+-------+
+| bookid | title                  | author        | price |
++--------+------------------------+---------------+-------+
+|      1 | The Catcher in the Rye | J.D. Salinger |  9.99 |
+|      2 | To Kill a Mockingbird  | Harper Lee    | 12.99 |
+|      3 | 1984                   | George Orwell | 14.99 |
+|      4 | Pride and Prejudice    | Jane Austen   | 11.49 |
++--------+------------------------+---------------+-------+
+
+
+STUDENTS TABLE:
+ select * from students;
++-----+---------------+------+
+| id  | sname         | dno  |
++-----+---------------+------+
+| 101 | Alice Smith   |    1 |
+| 102 | Bob Johnson   |    2 |
+| 103 | Charlie Brown |    3 |
+| 104 | David White   |    4 |
+------------------------------
+
+
+DEPARTMENT table:
+Select * from department;
++-----+------------------+
+| dno | name             |
++-----+------------------+
+|   1 | Computer Science |
+|   2 | Mathematics      |
+|   3 | Physics          |
+|   4 | Biology          |
+|   5 | BCA              |
++-----+------------------+
+
+
+BOOKISSUE table:
+select * from bookissue;
++--------+-----------+------------+-------------+
+| bookid | studentid | issue_date | return_date |
++--------+-----------+------------+-------------+
+|      1 |       101 | 2025-03-01 | 2025-03-15  |
+|      2 |       102 | 2025-03-01 | 2025-03-15  |
+|      3 |       103 | 2025-03-02 | 2025-03-16  |
+|      4 |       104 | 2025-03-02 | 2025-03-16  |
+|      1 |       104 | 2025-03-03 | 2025-03-17  |
++--------+-----------+------------+-------------+
+
+
+
+Q1) list all books include(bookid,title,author) with students details, list studentid and student name
+
+A)
+ select books.bookid,books.title,books.author,students.id,students.sname from books,students,bookissue where books.bookid=bookissue.bookid and students.id=bookissue.studentid;
++--------+------------------------+---------------+-----+---------------+
+| bookid | title                  | author        | id  | sname         |
++--------+------------------------+---------------+-----+---------------+
+|      1 | The Catcher in the Rye | J.D. Salinger | 101 | Alice Smith   |
+|      1 | The Catcher in the Rye | J.D. Salinger | 104 | David White   |
+|      2 | To Kill a Mockingbird  | Harper Lee    | 102 | Bob Johnson   |
+|      3 | 1984                   | George Orwell | 103 | Charlie Brown |
+|      4 | Pride and Prejudice    | Jane Austen   | 104 | David White   |
++--------+------------------------+---------------+-----+---------------+
+
+
+Q2)list students(sid,name) who have issued book with thier department name
+A)
+select students.id,students.sname,department.name from students,department,bookissue where students.dno=department.dno and students.id=bookissue.studentid;
++-----+---------------+------------------+
+| id  | sname         | name             |
++-----+---------------+------------------+
+| 101 | Alice Smith   | Computer Science |
+| 102 | Bob Johnson   | Mathematics      |
+| 103 | Charlie Brown | Physics          |
+| 104 | David White   | Biology          |
+| 104 | David White   | Biology          |
++-----+---------------+------------------+
+
+
+Using distinct keyword:
+-----------------------
+add age field in student table having same age (David White , Ansar)
+
++-----+---------------+------+------+
+| id  | sname         | dno  | age  |
++-----+---------------+------+------+
+| 101 | Alice Smith   |    1 |   20 |
+| 102 | Bob Johnson   |    2 |   21 |
+| 103 | Charlie Brown |    3 |   22 |
+| 104 | David White   |    4 |   23 |
+| 105 | Ansar         |    5 |   23 |
++-----+---------------+------+------+
+
+Q3)for getting distinct age from studnets:
+A)select distinct age from students;
++------+
+| age  |
++------+
+|   20 |
+|   21 |
+|   22 |
+|   23 |
++------+
+
+Substring pattern matching: (LIKE)
+----------------------------------
+Q4)list student where name starts with 'A'
+A)
+select sname from students where sname like 'A%';
++-------------+
+| sname       |
++-------------+
+| Alice Smith |
+| Ansar       |
++-------------+
+
+Q4)list student where name ends with 'A'
+A)
+select sname from students where sname like '%n';
++---------------+
+| sname         |
++---------------+
+| Bob Johnson   |
+| Charlie Brown |
++---------------+
+
+Q5)start with c and ends with n
+A)
+select sname from students where sname like 'c%n';
++---------------+
+| sname         |
++---------------+
+| Charlie Brown |
++---------------+
+
+
+Q5)Get the names of students that are exactly 5 characters long
+A)
+select sname from students where sname like '_____';
++-------+
+| sname |
++-------+
+| Ansar |
+---------
+
+
+Arithmetic expression in mysql:
+------------------------------
+Q6)list all books with price increased by 10%(1.1)
+A)
+select bookid ,title,price,price*1.1 from books;
++--------+------------------------+-------+-----------+
+| bookid | title                  | price | price*1.1 |
++--------+------------------------+-------+-----------+
+|      1 | The Catcher in the Rye |  9.99 |    10.989 |
+|      2 | To Kill a Mockingbird  | 12.99 |    14.289 |
+|      3 | 1984                   | 14.99 |    16.489 |
+|      4 | Pride and Prejudice    | 11.49 |    12.639 |
++--------+------------------------+-------+-----------+
+
+mysql> select bookid ,title,price,price*1.1 as price_increment from books;
++--------+------------------------+-------+-----------------+
+| bookid | title                  | price | price_increment |
++--------+------------------------+-------+-----------------+
+|      1 | The Catcher in the Rye |  9.99 |          10.989 |
+|      2 | To Kill a Mockingbird  | 12.99 |          14.289 |
+|      3 | 1984                   | 14.99 |          16.489 |
+|      4 | Pride and Prejudice    | 11.49 |          12.639 |
++--------+------------------------+-------+-----------------+
+
+
+Using BETWEEN operator:
+-----------------------
+Q7) display all students whose age between 21 and 23
+A)
+ select * from students where age between 21 and 23;
++-----+---------------+------+------+
+| id  | sname         | dno  | age  |
++-----+---------------+------+------+
+| 102 | Bob Johnson   |    2 |   21 |
+| 103 | Charlie Brown |    3 |   22 |
+| 104 | David White   |    4 |   23 |
+| 105 | Ansar         |    5 |   23 |
++-----+---------------+------+------+
+
+
