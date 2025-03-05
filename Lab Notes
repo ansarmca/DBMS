@@ -1,4 +1,5 @@
 BOOKS TABLE:
+-----------
 select * from books;
 +--------+------------------------+---------------+-------+
 | bookid | title                  | author        | price |
@@ -11,6 +12,7 @@ select * from books;
 
 
 STUDENTS TABLE:
+---------------
  select * from students;
 +-----+---------------+------+
 | id  | sname         | dno  |
@@ -23,6 +25,7 @@ STUDENTS TABLE:
 
 
 DEPARTMENT table:
+------------------
 Select * from department;
 +-----+------------------+
 | dno | name             |
@@ -36,6 +39,7 @@ Select * from department;
 
 
 BOOKISSUE table:
+---------------
 select * from bookissue;
 +--------+-----------+------------+-------------+
 | bookid | studentid | issue_date | return_date |
@@ -183,5 +187,163 @@ A)
 | 104 | David White   |    4 |   23 |
 | 105 | Ansar         |    5 |   23 |
 +-----+---------------+------+------+
+
+IN operator:
+-----------
+
+select * from students where age in (21,22,23);
++-----+---------------+------+------+
+| id  | sname         | dno  | age  |
++-----+---------------+------+------+
+| 102 | Bob Johnson   |    2 |   21 |
+| 103 | Charlie Brown |    3 |   22 |
+| 104 | David White   |    4 |   23 |
+| 105 | Ansar         |    5 |   23 |
++-----+---------------+------+------+
+
+
+Nested Queries:
+---------------
+
+select * from students where dno=(select max(dno) from students);
++-----+-------+------+------+
+| id  | sname | dno  | age  |
++-----+-------+------+------+
+| 105 | Ansar |    5 |   23 |
++-----+-------+------+------+
+
+if more than 1 row returns ,use IN operator otherwise use = operator
+
+Q8)get list of students who have issued at least 1 book
+A)As normal:
+ select distinct id,sname from students,bookissue where students.id=bookissue.studentid;
++-----+---------------+
+| id  | sname         |
++-----+---------------+
+| 101 | Alice Smith   |
+| 102 | Bob Johnson   |
+| 103 | Charlie Brown |
+| 104 | David White   |  |
++-----+---------------+
+
+using nested queries:
+SELECT id, sname FROM students WHERE id IN (SELECT studentid FROM bookissue);
++-----+---------------+
+| id  | sname         |
++-----+---------------+
+| 101 | Alice Smith   |
+| 102 | Bob Johnson   |
+| 103 | Charlie Brown |
+| 104 | David White   |
+-----------------------
+
+Q9) get the list of books that have issued
+A) As noraml:
+select distinct books.bookid,books.title from books join bookissu
++--------+------------------------+
+| bookid | title                  |
++--------+------------------------+
+|      4 | Pride and Prejudice    |
+|      3 | 1984                   |
+|      2 | To Kill a Mockingbird  |
+|      1 | The Catcher in the Rye |
++--------+------------------------+
+
+
+using nested queries:
+select bookid,title from books where bookid in (select bookid
+from bookissue);
++--------+------------------------+
+| bookid | title                  |
++--------+------------------------+
+|      1 | The Catcher in the Rye |
+|      2 | To Kill a Mockingbird  |
+|      3 | 1984                   |
+|      4 | Pride and Prejudice    |
++--------+------------------------+
+
+
+Q10) get the list of books that never issue
+A)
+INSERT INTO books (bookid, title, author, price) VALUES (5, 'The Great Gatsby', 'F. Scott Fitzgerald', 10.99);
+
+
+SELECT bookid, title FROM books WHERE bookid NOT IN (SELECT bookid FROM bookissue);
++--------+------------------+
+| bookid | title            |
++--------+------------------+
+|      5 | The Great Gatsby |
+-----------------------------
+
+ 
+ORDERBY CLAUSE:
+
+select bookid,title from books order by title;
++--------+------------------------+
+| bookid | title                  |
++--------+------------------------+
+|      3 | 1984                   |
+|      4 | Pride and Prejudice    |
+|      1 | The Catcher in the Rye |
+|      5 | The Great Gatsby       |
+|      2 | To Kill a Mockingbird  |
++--------+------------------------+
+
+
+select bookid,title from books order by title desc;
++--------+------------------------+
+| bookid | title                  |
++--------+------------------------+
+|      2 | To Kill a Mockingbird  |
+|      5 | The Great Gatsby       |
+|      1 | The Catcher in the Rye |
+|      4 | Pride and Prejudice    |
+|      3 | 1984                   |
++--------+------------------------+
+
+
+set operations:
+--------------
+
+Q11) 
+1) UNION:
+
+get a list of all students who have issued books and all students from mca department
+
+select students.id,students.sname from students join bookissue on students.id=bookissue.studentid union select students.id,students.sname from students join department on students.dno=department.dno where department.name='BCA';
++-----+---------------+
+| id  | sname         |
++-----+---------------+
+| 101 | Alice Smith   |
+| 102 | Bob Johnson   |
+| 103 | Charlie Brown |
+| 104 | David White   |
+| 105 | Ansar         |
++-----+---------------+
+
+2) UNION ALL:
+
+select students.id,students.sname from students join bookissue on students.id=bookissue.studentid union all select students.id,students.sname from students join department on students.dno=department.d
+no where department.name='BCA';
++-----+---------------+
+| id  | sname         |
++-----+---------------+
+| 101 | Alice Smith   |
+| 102 | Bob Johnson   |
+| 103 | Charlie Brown |
+| 104 | David White   |
+| 104 | David White   |
+| 105 | Ansar         |
++-----+---------------+
+
+
+
+
+
+
+
+
+
+
 
 
