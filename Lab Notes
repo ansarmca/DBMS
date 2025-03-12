@@ -277,6 +277,7 @@ SELECT bookid, title FROM books WHERE bookid NOT IN (SELECT bookid FROM bookissu
 
  
 ORDERBY CLAUSE:
+---------------
 
 select bookid,title from books order by title;
 +--------+------------------------+
@@ -338,9 +339,115 @@ no where department.name='BCA';
 
 
 
+JOIN:
+----
+1) INNER join: commom records in both tables
+
+2) LEFT join: first table and common records in both tables
+
+not issues student details:
+
+select * from books left outer join bookissue on books.bookid=bookissue.bookid where bookissue.bookid is NULL;
++--------+------------------+---------------------+-------+--------+-----------+------------+-------------+
+| bookid | title            | author              | price | bookid | studentid | issue_date | return_date |
++--------+------------------+---------------------+-------+--------+-----------+------------+-------------+
+|      5 | The Great Gatsby | F. Scott Fitzgerald | 10.99 |   NULL |      NULL | NULL       | NULL        |
++--------+------------------+---------------------+-------+--------+-----------+------------+-------------+
+
+
+3) OUTER join: 2nd table and commom records in both tables
+
+4) Full OUTER join: all records in both tables and all common records in both tables
+
+5)NATURAL join: it is an inner join
+
+Q1) list all books issued with student details using joint (inner join)
+
+ SELECT * from books inner join bookissue on books.bookid=bookissue.bookid;
++--------+------------------------+---------------+-------+--------+-----------+------------+-------------+
+| bookid | title                  | author        | price | bookid | studentid | issue_date | return_date |
++--------+------------------------+---------------+-------+--------+-----------+------------+-------------+
+|      1 | The Catcher in the Rye | J.D. Salinger |  9.99 |      1 |       101 | 2025-03-01 | 2025-03-15  |
+|      1 | The Catcher in the Rye | J.D. Salinger |  9.99 |      1 |       104 | 2025-03-03 | 2025-03-17  |
+|      2 | To Kill a Mockingbird  | Harper Lee    | 12.99 |      2 |       102 | 2025-03-01 | 2025-03-15  |
+|      3 | 1984                   | George Orwell | 14.99 |      3 |       103 | 2025-03-02 | 2025-03-16  |
+|      4 | Pride and Prejudice    | Jane Austen   | 11.49 |      4 |       104 | 2025-03-02 | 2025-03-16  |
++--------+------------------------+---------------+-------+--------+-----------+------------+-------------+
+
+
+Q2) list all books that have been issued, along with their details such as book title, author, price, and issue date.
+SELECT * from books left outer join bookissue on books.bookid=bookissue.bookid;
++--------+------------------------+---------------------+-------+--------+-----------+------------+-------------+
+| bookid | title                  | author              | price | bookid | studentid | issue_date | return_date |
++--------+------------------------+---------------------+-------+--------+-----------+------------+-------------+
+|      1 | The Catcher in the Rye | J.D. Salinger       |  9.99 |      1 |       101 | 2025-03-01 | 2025-03-15  |
+|      1 | The Catcher in the Rye | J.D. Salinger       |  9.99 |      1 |       104 | 2025-03-03 | 2025-03-17  |
+|      2 | To Kill a Mockingbird  | Harper Lee          | 12.99 |      2 |       102 | 2025-03-01 | 2025-03-15  |
+|      3 | 1984                   | George Orwell       | 14.99 |      3 |       103 | 2025-03-02 | 2025-03-16  |
+|      4 | Pride and Prejudice    | Jane Austen         | 11.49 |      4 |       104 | 2025-03-02 | 2025-03-16  |
+|      5 | The Great Gatsby       | F. Scott Fitzgerald | 10.99 |   NULL |      NULL | NULL       | NULL        |
++--------+------------------------+---------------------+-------+--------+-----------+------------+-------------+
+
+
+Q3)list students who have issued books along with thier departments (studentid, name, department name)
+
+select students.id, students.sname, department.name from students inner join bookissue on students.id=bookissue.studentid inner join department on  students.dno = department.dno;
++-----+---------------+------------------+
+| id  | sname         | name             |
++-----+---------------+------------------+
+| 101 | Alice Smith   | Computer Science |
+| 102 | Bob Johnson   | Mathematics      |
+| 103 | Charlie Brown | Physics          |
+| 104 | David White   | Biology          |
+| 104 | David White   | Biology          |
++-----+---------------+------------------+
 
 
 
+
+Q4)find books that have never been issued (title,author)
+
+ select title,author from books left outer join bookissue on books.bookid=bookissue.bookid where bookissue.bookid is NULL;
++------------------+---------------------+
+| title            | author              |
++------------------+---------------------+
+| The Great Gatsby | F. Scott Fitzgerald |
++------------------+---------------------+
+
+Q5) get student who have not issued any books(studentid, name)
+
+select students.id, students.sname from students left join bookissue on students.id=bookissue.studentid
+where bookissue.studentid is NUll;
++-----+-----------+
+| id  | sname     |
++-----+-----------+
+| 105 | Ansar     |
+| 106 | Eve Davis |
++-----+-----------+
+
+
+
+Q6)find students who have issued book but not returned yet (studentid, name, title, issued date, return date)
+
+select * from bookissue;
++--------+-----------+------------+-------------+
+| bookid | studentid | issue_date | return_date |
++--------+-----------+------------+-------------+
+|      1 |       101 | 2025-03-01 | 2025-03-15  |
+|      2 |       102 | 2025-03-01 | 2025-03-15  |
+|      3 |       103 | 2025-03-02 | 2025-03-16  |
+|      4 |       104 | 2025-03-02 | 2025-03-16  |
+|      1 |       104 | 2025-03-03 | 2025-03-17  |
++--------+-----------+------------+-------------+
+
+mysql> insert into bookissue values(4,102,"2025-10-10",NULL);
+
+mysql> select students.id,students.sname,books.title,bookissue.issue_date,bookissue.return_date from students inner join bookissue ON students.id = bookissue.studentid inner join books ON books.bookid = bookissue.bookid where bookissue.return_date is NUll;
++-----+-------------+---------------------+------------+-------------+
+| id  | sname       | title               | issue_date | return_date |
++-----+-------------+---------------------+------------+-------------+
+| 102 | Bob Johnson | Pride and Prejudice | 2025-10-10 | NULL        |
++-----+-------------+---------------------+------------+-------------+
 
 
 
