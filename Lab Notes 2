@@ -217,3 +217,119 @@ select * from books where price=(select max(price) from books);
 +--------+------------------------------+--------+--------+
 |      6 | Advanced Database Management | ABC    | 650.00 |
 +--------+------------------------------+--------+--------+
+
+4) Count How Many Books Each Student Has Issued:
+
+ select studentid,count(bookid) from bookissues group by studentid; 
++-----------+---------------+
+| studentid | count(bookid) |
++-----------+---------------+
+|       101 |             2 |
+|       102 |             1 |
+|       103 |             2 |
+|       104 |             2 |
+|       105 |             1 |
+|       106 |             2 |
+|       107 |             1 |
+|       108 |             1 |
+|       109 |             1 |
+|       110 |             1 |
+|       111 |             1 |
+|       112 |             1 |
++-----------+---------------+
+
+5)  Find the Average Book Price Per Author
+
+select author, avg(price) from books group by author;
++---------------------+------------+
+| author              | avg(price) |
++---------------------+------------+
+| J.D. Salinger       |  11.990000 |
+| Harper Lee          |  12.990000 |
+| George Orwell       |  14.490000 |
+| Jane Austen         |  11.490000 |
+| F. Scott Fitzgerald |  10.990000 |
+| ABC                 | 650.000000 |
+| J.R.R. Tolkien      |  15.990000 |
+| Leo Tolstoy         |  18.490000 |
+| Aldous Huxley       |  16.990000 |
+| Homer               |  12.490000 |
+| Fyodor Dostoevsky   |  16.240000 |
+| Dante Alighieri     |  19.990000 |
+| Miguel de Cervantes |  11.990000 |
++---------------------+------------+
+
+6) Find the Total Number of Books Issued Per Department
+SELECT departments.dname, COUNT(bookissues.bookid) AS total_books_issued
+FROM departments 
+JOIN students  ON departments.dno = students.dno
+JOIN bookissues ON students.id = bookissues.studentid
+GROUP BY departments.dno;
+
++------------------------+--------------------+
+| dname                  | total_books_issued |
++------------------------+--------------------+
+| MCA                    |                  4 |
+| CSE                    |                  4 |
+| IT                     |                  3 |
+| ECE                    |                  3 |
+| Mechanical Engineering |                  2 |
++------------------------+--------------------+
+
+7) Find the Number of Books Issued Per Day
+select issue_date , count(bookid) from bookissues group by issue_date;
++------------+---------------+
+| issue_date | count(bookid) |
++------------+---------------+
+| 2025-01-10 |             1 |
+| 2025-02-12 |             1 |
+| 2025-02-01 |             2 |
+| 2025-02-10 |             1 |
+| 2025-03-01 |             4 |
+| 2025-03-15 |             1 |
+| 2025-01-05 |             1 |
+| 2025-03-10 |             2 |
+| 2025-03-17 |             1 |
+| 2025-01-15 |             1 |
+| 2025-03-20 |             1 |
+------------------------------
+
+HAVING clause:
+-------------
+ used to filter records that come from a GROUP BY clause.
+
+Questions:
+
+1) find the departments with more than 3 sudents
+
+select dno,count(id) as total_students from students group by dno having count(id)>3;
++------+----------------+
+| dno  | total_students |
++------+----------------+
+|    2 |              4 |
++------+----------------+
+
+2) Find Students Who Have Issued More Than 2 Books:
+
+SELECT studentid, COUNT(bookid) AS books_issued
+FROM bookissues
+GROUP BY studentid
+HAVING COUNT(bookid) > 2;
+
+3) Find Authors Who Have Written More Than 3 Books:
+
+SELECT author, COUNT(bookid) AS books_written
+FROM books
+GROUP BY author
+HAVING COUNT(bookid) > 3;
+
+4) Find Departments That Have Issued At Least 10 Books:
+
+SELECT departments.dname, COUNT(bookissues.bookid) AS total_books_issued
+FROM departments 
+JOIN students s ON departments.dno = students.dno
+JOIN bookissues ON s.id = bookissues.studentid
+GROUP BY departments.dno
+HAVING COUNT(bookissues.bookid) >= 10;
+
+
