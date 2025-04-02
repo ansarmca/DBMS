@@ -1,50 +1,51 @@
--- 
--- Roll No: 26
--- Name: K ANSAR
--- Program: 03
--- 
+-- roll no: 26
+-- name: k ansar
+-- program: 03
 
+-- table structure for table librarians
+create table librarians (
+    librarianid int auto_increment primary key,
+    name varchar(50) not null,
+    email varchar(100) unique not null,
+    phone varchar(10) unique not null
+);
 
---
--- Table structure for table librarians
---
+-- table structure for table bookissues
+alter table bookissues add column librarianid int;
 
-CREATE TABLE librarians ( librarianid INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50) NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, phone VARCHAR(10) UNIQUE NOT NULL);
+-- dumping data for table librarians
+insert into librarians (librarianid, name, email, phone)
+values
+    (1, 'john smith', 'john.smith@example.com', '9876543210'),
+    (2, 'emma brown', 'emma.brown@example.com', '8765432109'),
+    (3, 'david wilson', 'david.wilson@example.com', '7654321098'),
+    (4, 'franklin', 'franklin@example.com', '3445236778');
 
+-- dumping data for table bookissues
+update bookissues
+set librarianid = 1
+where bookid in (101, 102, 103, 104, 105, 106);
 
---
--- Table structure for table bookissues
---
-ALTER TABLE bookissues ADD COLUMN librarianid INT;
+-- sql query statements
 
+-- 5
+select bookissues.bookid, students.sname, books.title, librarians.name
+from bookissues
+join students on bookissues.studentid = students.id
+join books on bookissues.bookid = books.bookid
+left join librarians on bookissues.librarianid = librarians.librarianid;
 
---
--- Dumping data for table librarians
---
+-- 6
+select librarians.librarianid, librarians.name as librarian_name, count(bookissues.bookid) as total_books_issued
+from librarians
+left join bookissues on librarians.librarianid = bookissues.librarianid
+group by librarians.librarianid, librarians.name;
 
-INSERT INTO librarians (librarianid, name, email, phone)
-VALUES
-    (1, 'John Smith', 'john.smith@example.com', '9876543210'),
-    (2, 'Emma Brown', 'emma.brown@example.com', '8765432109'),
-    (3, 'David Wilson', 'david.wilson@example.com', '7654321098'),
-    (4, 'Franklin', 'franklin@example.com', '3445236778');
+-- 7
+select librarians.librarianid, librarians.name
+from librarians
+left join bookissues on librarians.librarianid = bookissues.librarianid
+where bookissues.bookid is null;
 
---
--- Dumping data for table bookissues
---
-
-UPDATE bookissues SET librarianid = 1 WHERE bookid IN (101, 102, 103, 104, 105, 106);
-
---
--- SQl Query Statements
---
-5)select bookissues.bookid,students.sname,books.title,librarians.name from bookissues join students on
-bookissues.studentid=students.id join books on bookissues.bookid=books.bookid left join librarians on bookissues.librarianid=librarians.librarianid;
-
-6)SELECT librarianid,name AS librarian_name, COUNT(bookid) AS total_books_issued FROM bookissuesGROUP BY) librarianid, name;
-
-
-7)SELECT librarians.librarianid, librarians.name FROM librarians LEFT JOIN bookissues ON librarians.librarianid = bookissues.librarianid WHERE bookissues.bookid IS NULL;
-
-
--- -----Question number should be commented---------------#This line may be removed in the actual file
+-- -----question number should be commented---------------
+-- this line may be removed in the actual file
