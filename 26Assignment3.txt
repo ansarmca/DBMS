@@ -2,7 +2,9 @@
 -- name: k ansar
 -- program: 03
 
--- table structure for table librarians
+--
+--table structure for table librarians
+--
 create table librarians (
     librarianid int auto_increment primary key,
     name varchar(50) not null,
@@ -13,7 +15,9 @@ create table librarians (
 -- table structure for table bookissues
 alter table bookissues add column librarianid int;
 
+--
 -- dumping data for table librarians
+--
 insert into librarians (librarianid, name, email, phone)
 values
     (1, 'john smith', 'john.smith@example.com', '9876543210'),
@@ -21,13 +25,16 @@ values
     (3, 'david wilson', 'david.wilson@example.com', '7654321098'),
     (4, 'franklin', 'franklin@example.com', '3445236778');
 
+--
 -- dumping data for table bookissues
+--
 update bookissues
 set librarianid = 1
 where bookid in (101, 102, 103, 104, 105, 106);
 
+--
 -- sql query statements
-
+--
 -- 5
 select bookissues.bookid, students.sname, books.title, librarians.name
 from bookissues
