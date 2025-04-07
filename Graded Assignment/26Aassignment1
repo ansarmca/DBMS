@@ -1,0 +1,79 @@
+-- 
+-- Roll No: 26
+-- Name: K ANSAR
+-- Program: 01
+-- 
+
+--
+-- Table structure for table books
+--
+create table books (accno int auto_increment primary key, title varchar(100) not null unique, author varchar(50) not null, price float(4,2), type enum('lending', 'reference'), availability enum('yes', 'no'), publisherid int, foreign key (publisherid) references publishers(publisherid));
+
+--
+-- Dumping data for table books
+--
+insert into books (title, author, price, type, availability, publisherid) values ('learning sql', 'alan beaulieu', 45.99, 'lending', 'yes', 3), ('data structures', 'mark weiss', 55.50, 'reference', 'yes', 2), ('dbms concepts', 'silberschatz', 65.25, 'lending', 'yes', 1), ('python basics', 'eric matthes', 42.75, 'lending', 'yes', 5), ('java complete', 'herbert schildt', 50.99, 'lending', 'yes', 4);
+
+--
+-- SQl Query Statements
+--
+
+--
+-- Table structure for table publishers
+--
+create table publishers (publisherid int auto_increment primary key, name varchar(50) not null unique, address varchar(100));
+
+--
+-- Dumping data for table publishers
+--
+insert into publishers (name, address) values ('pearson', 'london'), ('mcgraw hill', 'new york'), ('oreilly', 'california'), ('springer', 'berlin'), ('wiley', 'new jersey');
+
+--
+-- SQl Query Statements
+--
+
+--
+-- Table structure for table members
+--
+create table members (memberid int auto_increment primary key, name varchar(50) not null, address varchar(100), type enum('staff', 'student'));
+
+--
+-- Dumping data for table members
+--
+insert into members (name, address, type) values ('alice', 'springfield', 'student'), ('bob', 'shelbyville', 'staff'), ('carol', 'capital city', 'student'), ('david', 'metropolis', 'staff'), ('eve', 'gotham', 'student');
+
+--
+-- SQl Query Statements
+--
+
+--
+-- Table structure for table issues
+--
+create table issues (issueid int auto_increment primary key, memberid int, accno int, issuedate date, duedate date, foreign key (memberid) references members(memberid), foreign key (accno) references books(accno));
+
+--
+-- Dumping data for table issues
+--
+insert into issues (memberid, accno, issuedate, duedate) values (1, 6, '2025-03-01', '2025-03-15'), (2, 7, '2025-03-02', '2025-03-16'), (3, 8, '2025-03-05', '2025-03-19'), (4, 9, '2025-03-10', '2025-03-24'), (5, 10, '2025-03-12', '2025-03-26');
+
+--
+-- SQl Query Statements
+--
+
+--
+-- Table structure for table returns
+--
+create table returns (returnid int auto_increment primary key, memberid int, accno int, returndate date, fine int default 0 check (fine >= 0), foreign key (memberid) references members(memberid), foreign key (accno) references books(accno));
+
+--
+-- Dumping data for table returns
+--
+insert into returns (memberid, accno, returndate, fine) values (1, 6, '2025-03-14', 0), (2, 7, '2025-03-16', 0), (3, 8, '2025-03-20', 10), (4, 9, '2025-03-25', 0), (5, 10, '2025-03-28', 5);
+
+--
+-- SQl Query Statements
+--
+
+
+-- -----SQL query statments preceeded by the its question-------- # This line may be removed in the actual file
+-- -----Question number should be commented---------------#This line may be removed in the actual file
