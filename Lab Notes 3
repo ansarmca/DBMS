@@ -1,0 +1,43 @@
+Trigger:
+-------
+
+
+
+create trigger trigrname
+<after|before> <insert|deletye|update> ON
+begin
+
+OLD  NEW
+
+
+end
+
+
+eg:
+create trigger checkprice before update on books begin if NEW.price > 1000 then print "update not possible" endif end
+
+
+
+1) create a function to display the price of a book
+
+DELIMITER $$
+
+CREATE FUNCTION get_price(a INT) RETURNS DECIMAL(10,2) DETERMINISTIC RETURN (SELECT price FROM books WHERE accno = a)$$
+ 
+DELIMITER ;
+
+
+SELECT get_price(6);
++--------------+
+| get_price(6) |
++--------------+
+|        45.99 |
++--------------+
+
+
+
+2) create a function to calculate and returns the total fine amount
+
+
+
+3) create a trigger to set availability to know to NO when a book is issue
