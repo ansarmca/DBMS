@@ -38,6 +38,36 @@ SELECT get_price(6);
 
 2) create a function to calculate and returns the total fine amount
 
+DELIMITER $$
+
+CREATE FUNCTION total_fine()
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+RETURN (SELECT SUM(fine) FROM returns)$$
+
+DELIMITER ;
+
+SELECT total_fine();
+
++---------------+
+| total_fines() |
++---------------+
+|         15.00 |
++---------------+
+
 
 
 3) create a trigger to set availability to know to NO when a book is issue
+
+DELIMITER $$
+
+CREATE TRIGGER set_availability_no
+AFTER INSERT ON issue
+FOR EACH ROW
+BEGIN
+    UPDATE books
+    SET availability = 'NO'
+    WHERE accno = NEW.accno;
+END$$
+
+DELIMITER ;
