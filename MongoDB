@@ -1,0 +1,206 @@
+
+show dbs
+
+24mca26_db> db
+24mca26_db
+
+to create collection:
+-----------------------
+db.createCollection("mydb")
+
+24mca26_db> show collections
+mydb
+
+24mca26_db> db.createCollection("student")
+{ ok: 1 }
+
+to insert:
+----------
+24mca26_db> db.student.insertOne({rollno:1,name:"Ansar",age:23})
+{
+  acknowledged: true,
+  insertedId: ObjectId('681b22da31832111c4d861e0')
+}
+24mca26_db> db.student.insertOne({rollno:2,name:"Adhila"})
+{
+  acknowledged: true,
+  insertedId: ObjectId('681b255231832111c4d861e1')
+}
+
+to see data:
+------------
+24mca26_db> db.student.find()
+[
+  {
+    _id: ObjectId('681b22da31832111c4d861e0'),
+    rollno: 1,
+    name: 'Ansar',
+    age: 23
+  },
+  {
+    _id: ObjectId('681b255231832111c4d861e1'),
+    rollno: 2,
+    name: 'Adhila'
+  }
+]
+
+find filters:
+-------------
+1)
+24mca26_db> db.student.find({rollno:2})
+[
+  {
+    _id: ObjectId('681b255231832111c4d861e1'),
+    rollno: 2,
+    name: 'Adhila'
+  }
+]
+
+2) should contain both rollno:1,age:23
+24mca26_db> db.student.find({$and:[{rollno:1,age:23}]})
+[
+  {
+    _id: ObjectId('681b22da31832111c4d861e0'),
+    rollno: 1,
+    name: 'Ansar',
+    age: 23
+  }
+]
+
+3)should contain either rollno:1 or age:23
+24mca26_db> db.student.find({$or:[{rollno:1,age:23}]})
+[
+  {
+    _id: ObjectId('681b22da31832111c4d861e0'),
+    rollno: 1,
+    name: 'Ansar',
+    age: 23
+  }
+]
+
+4) to show all documents
+24mca26_db> db.student.find({},{rollno:1,name:1})
+[
+  {
+    _id: ObjectId('681b22da31832111c4d861e0'),
+    rollno: 1,
+    name: 'Ansar'
+  },
+  {
+    _id: ObjectId('681b255231832111c4d861e1'),
+    rollno: 2,
+    name: 'Adhila'
+  }
+]
+
+5) to show all documents and no need of id
+24mca26_db> db.student.find({},{rollno:1,name:1,_id:0})
+[ { rollno: 1, name: 'Ansar' }, { rollno: 2, name: 'Adhila' } ]
+
+6)add mobile number: db.student.insertOne({rollno:3,name:"Henna",age:25,phone:[1212121212,45454545]})
+
+7)composite attribute:
+----------------------
+db.student.insertOne({rollno:4,name:"Fazil",age:23,address:{city:"Nellya",state:"Kerala]"}})
+
+8)complex atribute:
+------------------
+db.student.insertOne({
+  rollno: 5,
+  name: "Sooraj",
+  age: 24,
+  project: [
+    { pid: 101, pname: "x project" },
+    { pid: 102, pname: "y project" }
+  ]
+})
+
+TO UPDATE:
+---------
+update a single document
+24mca26_db> db.student.updateOne({rollno:1},{$set:{age:55}})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+update a many document
+24mca26_db> db.student.updateMany({},{$set:{age:55}})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 5,
+  modifiedCount: 4,
+  upsertedCount: 0
+}
+
+RENAME A KEY:
+------------
+phone to phoneNo:
+24mca26_db> db.student.updateOne({phone:{$exists:true}},{$rename:{phone:"phoneNo"}})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+DROP A KEY:
+------------  
+db.student.updateOne({rollno:1},{$unset:{phoneNo:""}})
+
+DELETE A DOCUMENT:
+----------------
+db.student.deleteOne({rollno:1})
+
+AGGREGATE FUNCTION:
+-------------------
+TO SORT:
+---------
+for ASC
+db.student.find().sort({name:1})
+
+for DESC
+db.student.find().sort({name:-1})
+
+TO COUNT:
+----------
+24mca26_db> db.student.find().count()
+4
+TO LIMIT:
+--------
+24mca26_db> db.student.find().limit(3)
+[
+  {
+    _id: ObjectId('681b255231832111c4d861e1'),
+    rollno: 2,
+    name: 'Adhila',
+    age: 55
+  },
+  {
+    _id: ObjectId('681b29c031832111c4d861e2'),
+    rollno: 3,
+    name: 'Henna',
+    age: 55,
+    phone: [ 1212121212, 45454545 ]
+  },
+  {
+    _id: ObjectId('681b2afb31832111c4d861e3'),
+    rollno: 4,
+    name: 'Fazil',
+    age: 55,
+    address: { city: 'Nellya', state: 'Kerala]' }
+  }
+]
+
+The createIndex() function is used to create indexes on collections, which improves query performance by allowing MongoDB to quickly locate documents without scanning
+the entire collection.
+24mca26_db> db.student.createIndex({rollno:1},{unique:true})
+rollno_1
+
+
+
