@@ -1,4 +1,4 @@
-BOOKS TABLE:ansardevutty
+BOOKS TABLE:
 -----------
 select * from books;
 +--------+------------------------+---------------+-------+
