@@ -211,3 +211,17 @@ To update:
 ----------
 db.orders.updateOne({id:1},{$push:{colors:"blue"}})
 
+
+aggregate framework (match,sort,limit,filter,project,group):
+------------------------------------------------------------
+
+db.orders.aggregate({$match:{paid:"Y"}})
+
+db.orders.aggregate([{$match:{paid:"Y"}},{$project:{order_no:1,year:1,_id:0}}])
+[
+  { order_no: 'O1', year: 2020 },
+  { order_no: 'O2', year: 2020 },
+  { order_no: 'O4', year: 2017 },
+  { order_no: 'O5', year: 2020 },
+  { order_no: 'O1', year: 2020 }
+]
