@@ -16,6 +16,10 @@ mydb
 
 to insert:
 ----------
+
+24mca26_db> db.order.insertOne({order_id:"02",year:2020,paid:"Y",cost:{price:13,currency:"DLR"},items:[{pno:"P2",colors:["white"],quantity:4},{pno:"P3",colors:["white","black"],quantity:1}],delivery_days:4})
+
+
 24mca26_db> db.student.insertOne({rollno:1,name:"Ansar",age:23})
 {
   acknowledged: true,
