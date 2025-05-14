@@ -207,4 +207,7 @@ the entire collection.
 rollno_1
 
 
+To update:
+----------
+db.orders.updateOne({id:1},{$push:{colors:"blue"}})
 
