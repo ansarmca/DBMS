@@ -1,23 +1,164 @@
+view:
+-----
+In MySQL, a view is a virtual table based on the result of a SELECT query. It doesn't store data itself but provides a way to simplify complex queries or reuse SQL logic.
+
+CREATE TABLE students (
+    student_id INT PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+INSERT INTO students VALUES
+(1, 'Alice'),
+(2, 'Bob'),
+(3, 'Charlie');
+
+CREATE TABLE marks (
+    mark_id INT PRIMARY KEY,
+    student_id INT,
+    subject VARCHAR(100),
+    score INT,
+    FOREIGN KEY (student_id) REFERENCES students(student_id)
+);
+
+INSERT INTO marks VALUES
+(1, 1, 'Math', 85),
+(2, 1, 'English', 90),
+(3, 2, 'Math', 78),
+(4, 3, 'English', 88);
+
+
+CREATE VIEW student_scores AS
+SELECT
+    s.student_id,
+    s.name,
+    m.subject,
+    m.score
+FROM students s
+JOIN marks m ON s.student_id = m.student_id;
+
+SELECT * FROM student_scores;
+
++------------+---------+---------+-------+
+| student_id | name    | subject | score |
++------------+---------+---------+-------+
+| 1          | Alice   | Math    | 85    |
+| 1          | Alice   | English | 90    |
+| 2          | Bob     | Math    | 78    |
+| 3          | Charlie | English | 88    |
++------------+---------+---------+-------+
+
+
+TO drop a view: DROP VIEW student_scores;
+
 Trigger:
 -------
+A trigger is a set of SQL statements that automatically executes in response to a specific event (INSERT, UPDATE, DELETE) on a particular table.
+syx:
 
+CREATE TRIGGER trigger_name
+[BEFORE | AFTER] INSERT | UPDATE | DELETE
+ON table_name
+FOR EACH ROW
+BEGIN
+    -- SQL logic here
+END;
 
+| **Event** | **Trigger Timing** | **Use Cases**                                                 |
+|----------|--------------------|----------------------------------------------------------------|
+| `INSERT` | BEFORE / AFTER     | Logs, data validation, update stock, audit trails             |
+| `UPDATE` | BEFORE / AFTER     | Track changes, validate updates, adjust related data          |
+| `DELETE` | BEFORE / AFTER     | Archive data, audit logs, clean related entries               |
 
-create trigger trigrname
-<after|before> <insert|deletye|update> ON
-begin
-
-OLD  NEW
-
-
-end
 
 
 eg:
-create trigger checkprice before update on books begin if NEW.price > 1000 then print "update not possible" endif end
 
+CREATE TABLE employees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    position VARCHAR(100),
+    salary DECIMAL(10, 2)
+);
 
+CREATE TABLE employee_log (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    emp_name VARCHAR(100),
+    action_time DATETIME,
+    action_type VARCHAR(50)
+);
 
+DELIMITER //
+
+CREATE TRIGGER after_employee_insert
+AFTER INSERT ON employees
+FOR EACH ROW
+BEGIN
+  INSERT INTO employee_log (emp_name, action_time, action_type)
+  VALUES (NEW.name, NOW(), 'INSERT');
+END;
+//
+
+DELIMITER ;
+
+Insert Data and Test
+INSERT INTO employees (name, position, salary)
+VALUES ('John Doe', 'Manager', 75000);
+
+Check the Log Table
+SELECT * FROM employee_log;
+
++--------+-----------+---------------------+-------------+
+| log_id | emp_name  | action_time         | action_type |
++--------+-----------+---------------------+-------------+
+| 1      | John Doe  | 2025-05-20 10:15:00 | INSERT      |
++--------+-----------+---------------------+-------------+
+
+--------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE products (
+    product_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    stock INT
+);
+
+CREATE TABLE sales (
+    sale_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_id INT,
+    quantity_sold INT,
+    sale_date DATE,
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+Trigger to Update Stock After a Sale:
+DELIMITER $$
+
+CREATE TRIGGER update_stock_after_sale
+AFTER INSERT ON sales
+FOR EACH ROW
+BEGIN
+    UPDATE products
+    SET stock = stock - NEW.quantity_sold
+    WHERE product_id = NEW.product_id;
+END$$
+
+DELIMITER ;
+
+Example Usage:
+-- Insert a product with 100 items in stock
+INSERT INTO products (product_id, name, stock) VALUES (1, 'Keyboard', 100);
+
+-- Insert a sale of 5 keyboards
+INSERT INTO sales (product_id, quantity_sold, sale_date) VALUES (1, 5, CURDATE());
+
+-- Check product stock
+SELECT * FROM products;
+
+Expected Output:
++------------+----------+-------+
+| product_id | name     | stock |
++------------+----------+-------+
+| 1          | Keyboard | 95    |
++------------+----------+-------+
+-------------------------------------------------------------------------------------------------------------------------------
 1) create a function to display the price of a book
 
 DELIMITER $$
@@ -57,7 +198,7 @@ SELECT total_fine();
 
 
 
-3) create a trigger to set availability to know to NO when a book is issue
+3) Create a trigger to set the availability to 'NO' when a book is issued.
 
 DELIMITER $$
 
