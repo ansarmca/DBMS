@@ -7,7 +7,7 @@
 
 1. Create a MySQL view named "IssuedBooksDetails" that combines information about issued books, including the book title, member name, and issue date. Include columns for book title, member name, and issue date.
 
-create view IssueBooksDetails as SELECT books.title, m.name,issuedate from books join issues on  books.accno = issues.accno join members m on m.memberid = issues.memberid;
+create view IssueBooksDetails as SELECT books.title, m.name,issues.issuedate from books join issues on  books.accno = issues.accno join members m on m.memberid = issues.memberid;
 
 2. Create a stored function in MySQL that calculates and returns the total fine amount for a given member based on their memberid.
 
