@@ -46,6 +46,7 @@ SELECT * FROM student_scores;
 
 
 TO drop a view: DROP VIEW student_scores;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Trigger:
 -------
@@ -170,23 +171,88 @@ Expected Output:(after trigger - stock is updated from 100 to 95)
 | 1          | Keyboard | 95    |
 +------------+----------+-------+
 -------------------------------------------------------------------------------------------------------------------------------
+
+MySQL stored procedure:
+-----------------------
+
+-- Table for members
+CREATE TABLE members (
+    member_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+-- Table for issued books
+CREATE TABLE issues (
+    issue_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_title VARCHAR(100),
+    member_id INT,
+    issue_date DATE,
+    FOREIGN KEY (member_id) REFERENCES members(member_id)
+);
+
+CREATE TABLE books (
+    accno INT PRIMARY KEY,
+    title VARCHAR(100),
+    price DECIMAL(10,2)
+);
+
+INSERT INTO books VALUES
+(1, 'The Alchemist', 299.99),
+(2, '1984', 199.50);
+
+-- Members
+INSERT INTO members (name) VALUES
+('Alice'), ('Bob'), ('Charlie');
+
+-- Issues
+INSERT INTO issues (book_title, member_id, issue_date) VALUES
+('The Alchemist', 1, '2024-01-10'),
+('1984', 1, '2024-01-15'),
+('Clean Code', 2, '2024-02-01');
+
+Show all books issued to a specific member: 
+DELIMITER //
+
+CREATE PROCEDURE GetIssuedBooksByMember(IN p_member_id INT)
+BEGIN
+    SELECT m.name AS MemberName, i.book_title AS BookTitle, i.issue_date AS IssueDate
+    FROM members m
+    JOIN issues i ON m.member_id = i.member_id
+    WHERE m.member_id = p_member_id;
+END;
+//
+
+DELIMITER ;
+
+CALL GetIssuedBooksByMember(1);
++-------+---------------+------------+
+| name  | book_title    | issue_date |
++-------+---------------+------------+
+| Alice | The Alchemist | 2024-01-10 |
+| Alice | 1984          | 2024-01-15 |
++-------+---------------+------------+
+
 1) create a function to display the price of a book
 
 DELIMITER $$
 
-CREATE FUNCTION get_price(a INT) RETURNS DECIMAL(10,2) DETERMINISTIC RETURN (SELECT price FROM books WHERE accno = a)$$
- 
+CREATE FUNCTION get_price(a INT) 
+RETURNS DECIMAL(10,2) 
+DETERMINISTIC
+BEGIN
+    DECLARE p DECIMAL(10,2);
+    SELECT price INTO p FROM books WHERE accno = a;
+    RETURN p;
+END$$
+
 DELIMITER ;
 
-
-SELECT get_price(6);
+SELECT get_price(1);
 +--------------+
-| get_price(6) |
+| get_price(1) |
 +--------------+
-|        45.99 |
+|       299.99 |
 +--------------+
-
-
 
 2) create a function to calculate and returns the total fine amount
 
@@ -195,7 +261,11 @@ DELIMITER $$
 CREATE FUNCTION total_fine()
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
-RETURN (SELECT SUM(fine) FROM returns)$$
+BEGIN
+    DECLARE total DECIMAL(10,2);
+    SELECT SUM(fine) INTO total FROM returns;
+    RETURN total;
+END$$
 
 DELIMITER ;
 
@@ -206,8 +276,6 @@ SELECT total_fine();
 +---------------+
 |         15.00 |
 +---------------+
-
-
 
 3) Create a trigger to set the availability to 'NO' when a book is issued.
 
@@ -223,8 +291,6 @@ BEGIN
 END$$
 
 DELIMITER ;
-
-
 
 check about NO:
 mysql> select * from books;
@@ -273,3 +339,71 @@ mysql> select * from issues;
 |      15 |        5 |    10 | 2025-03-12 | 2025-03-26 |
 |     999 |        2 |     6 | 2025-04-30 | 2025-05-13 |
 +---------+----------+-------+------------+------------+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Stored Procedure:
+----------------
+
+books(accno INT, title VARCHAR(100), price DECIMAL(10,2))
+
+issues(issue_id INT, accno INT, member_id INT, issue_date DATE, return_date DATE)
+select * from issues;
++----------+---------------+-----------+------------+
+| issue_id | book_title    | member_id | issue_date |
++----------+---------------+-----------+------------+
+|        4 | The Alchemist |         1 | 2024-01-10 |
+|        5 | 1984          |         1 | 2024-01-15 |
+|        6 | Clean Code    |         2 | 2024-02-01 |
++----------+---------------+-----------+------------+
+
+Get count of books issued to a member: 
+DELIMITER $$
+
+CREATE PROCEDURE GetIssuedBookCount(IN memberID INT, OUT issuedCount INT)
+BEGIN
+    SELECT COUNT(*) INTO issuedCount
+    FROM issues
+    WHERE member_id = memberID;
+END$$
+
+DELIMITER ;
+
+CALL GetIssuedBookCount(2, @count);
+SELECT @count;
++--------+
+| @count |
++--------+
+|      2 |
++--------+
+
+
+NOTES:
+------
+-------------------------------------------------------------------------------------------------------------------------------------------
+Symbol            	Meaning	                                                          Scope                                               |
+------------------------------------------------------------------------------------------------------------------------------------------|
+@var             	User session variable	                                          Available during current session, outside procedures|
+DECLARE var     	Local variable inside procedure or function 	                  Only inside the procedure/function                  |
+------------------------------------------------------------------------------------------------------------------------------------------|
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Aspect                                        | Stored Procedure                                                                    | Stored Function                                                  |
+| --------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **Purpose**                                   | Performs a task or set of tasks (can be complex).                                   | Returns a single value (like a mathematical function).           |
+| **Return type**                               | Does **not** return a value directly; can return result sets or use OUT parameters. | Returns a **single scalar value** using `RETURN`.                |
+| **Usage in SQL**                              | Executed with `CALL procedure_name(...)`.                                           | Called within SQL statements using `SELECT function_name(...)`.  |
+| **Can be used in expressions?**               | No                                                                                  | Yes                                                              |
+| **Can have input/output parameters?**         | Yes (IN, OUT, INOUT parameters)                                                     | Only IN parameters                                               |
+| **Transaction control**                       | Can commit or rollback transactions.                                                | Cannot manage transactions                                       |
+| **Side effects**                              | Can perform operations that modify data (INSERT, UPDATE, DELETE).                   | Generally should not have side effects (best practice).          |
+| **Can be called from triggers or functions?** | Yes                                                                                 | No                                                               |
+| **Syntax**                                    | `CREATE PROCEDURE procedure_name(...) BEGIN ... END;`                               | `CREATE FUNCTION function_name(...) RETURNS type BEGIN ... END;` |
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Use of SELECT and CALL:
+----------------------
+SELECT function_name(parameters);
+        Stored functions return a single value (scalar) and are used inside queries just like built-in functions.
+
+CALL procedure_name(parameters);
+        Stored procedures do not return a value directly, but can return result sets (like rows) or output parameters.
