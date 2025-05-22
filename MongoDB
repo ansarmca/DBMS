@@ -225,3 +225,84 @@ db.orders.aggregate([{$match:{paid:"Y"}},{$project:{order_no:1,year:1,_id:0}}])
   { order_no: 'O5', year: 2020 },
   { order_no: 'O1', year: 2020 }
 ]
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+QUESTION:
+--------
+1) Insert 5 Documents into library Collection
+
+db.library.insertOne({
+  student_id: "S1",
+  name: "Anu",
+  department: "CS",
+  issued: "Y",
+  book: { title: "Python Basics", author: "James", price: 250, currency: "INR" },
+  borrow_days: 10
+});
+
+db.library.insertOne({
+  student_id: "S2",
+  name: "Ravi",
+  department: "IT",
+  issued: "N",
+  book: { title: "Node.js Guide", author: "Alex", price: 300, currency: "USD" },
+  borrow_days: 0
+});
+
+db.library.insertOne({
+  student_id: "S3",
+  name: "Megha",
+  department: "CS",
+  issued: "Y",
+  book: { title: "Java Fundamentals", author: "Sam", price: 180, currency: "INR" },
+  borrow_days: 7
+});
+
+db.library.insertOne({
+  student_id: "S4",
+  name: "Kiran",
+  department: "EC",
+  issued: "Y",
+  book: { title: "DBMS", author: "Joseph", price: 150, currency: "INR" },
+  borrow_days: 5
+});
+
+db.library.insertOne({
+  student_id: "S5",
+  name: "Divya",
+  department: "IT",
+  issued: "N",
+  book: { title: "C++ Programming", author: "Steve", price: 275, currency: "USD" },
+  borrow_days: 0
+});
+
+2) Retrieve all documents where book title contains "Java"
+db.library.find({ "book.title": /Java/ })
+ 
+3) Retrieve all documents where the student has borrowed books for more than 5 days.
+db.library.find({ borrow_days: { $gt: 5 } })
+
+4)Retrieve all documents where the book author is "James" or "Sam".
+db.library.find({ "book.author": { $in: ["James", "Sam"] } })
+
+5) Retrieve all students whose book price is between 150 and 300 (inclusive).
+db.library.find({ "book.price": { $gte: 150, $lte: 300 } })
+
+6) Retrieve students who have issued books and the department is not "CS".
+db.library.find({ issued: "Y", department: { $ne: "CS" } })
+
+7)Retrieve all students whose book title does not contain "Programming".
+db.library.find({ "book.title": { $not: /Programming/ } })
+
+
+Basic Regex (Regular Expression) Patterns:
+-----------------------------------------------------------------------
+| Pattern   | Meaning                | Example                        |
+| --------- | ---------------------- | ------------------------------ |
+| /abc/     | Contains "abc"         | Matches "abc", "1abc2", "xabc" |
+| /^abc/    | Starts with "abc"      | Matches "abc123", "abcBook"    |
+| /abc$/    | Ends with "abc"        | Matches "123abc", "myabc"      |
+| /^abc$/   | Exact match "abc"      | Only matches "abc"             |
+| /Java/i   | Case-insensitive match | Matches "java", "Java", "JAVA" |
+-----------------------------------------------------------------------
