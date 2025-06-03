@@ -1,0 +1,95 @@
+11. Create the departments table
+CREATE TABLE departments (
+    dno INT PRIMARY KEY,
+    dname VARCHAR(50) NOT NULL
+);
+
+-- Create the bookissues table
+CREATE TABLE bookissues (
+    bookid INT,
+    studentid INT,
+    issue_date DATE,
+    return_date DATE,
+    fine DECIMAL(5,2) DEFAULT 0.00
+);
+
+12. Modify the students table
+-- Remove the "course" column
+ALTER TABLE students DROP COLUMN course;
+
+-- Add the "dno" column
+ALTER TABLE students ADD COLUMN dno INT;
+
+-- Add a foreign key constraint referencing departments(dno)
+ALTER TABLE students
+ADD CONSTRAINT fk_students_dno
+FOREIGN KEY (dno) REFERENCES departments(dno);
+
+13. Modify the bookissues table
+-- Add composite primary key (bookid, studentid)
+ALTER TABLE bookissues
+ADD CONSTRAINT pk_bookissues PRIMARY KEY (bookid, studentid);
+
+-- Add foreign key for bookid referencing books(bookid)
+ALTER TABLE bookissues
+ADD CONSTRAINT fk_bookissues_bookid
+FOREIGN KEY (bookid) REFERENCES books(bookid);
+
+-- Add foreign key for studentid referencing students(studentid)
+ALTER TABLE bookissues
+ADD CONSTRAINT fk_bookissues_studentid
+FOREIGN KEY (studentid) REFERENCES students(studentid);
+
+14. Insert the following record into the departments table
+INSERT INTO departments (dno, dname) VALUES (1, 'MCA');
+
+15. Insert the following records into the bookissues table
+INSERT INTO bookissues (bookid, studentid, issue_date, return_date, fine) VALUES
+(2, 101, '2025-02-10', NULL, 0.00),
+(1, 102, '2025-02-12', '2025-02-18', 0.00);
+
+16. List all books issued with student details (include attributes studentid, name, bookid, title)
+
+SELECT bi.studentid, s.name, bi.bookid, b.title
+FROM bookissues bi
+JOIN students s ON bi.studentid = s.studentid
+JOIN books b ON bi.bookid = b.bookid;
+
+17. Show all students along with their department names (include attributes studentid, name, dname)
+SELECT s.studentid, s.name, d.dname
+FROM students s
+LEFT JOIN departments d ON s.dno = d.dno;
+
+18. List students who have issued books along with their department (include attributes studentid, name, dname, bookid, title)
+
+SELECT s.studentid, s.name, d.dname, b.bookid, b.title
+FROM bookissues bi
+JOIN students s ON bi.studentid = s.studentid
+LEFT JOIN departments d ON s.dno = d.dno
+JOIN books b ON bi.bookid = b.bookid;
+
+19. Find books that have never been issued (include attributes bookid, title)
+SELECT b.bookid, b.title
+FROM books b
+LEFT JOIN bookissues bi ON b.bookid = bi.bookid
+WHERE bi.bookid IS NULL;
+
+20. Get students who have not issued any book (include attributes studentid, name)
+SELECT s.studentid, s.name
+FROM students s
+LEFT JOIN bookissues bi ON s.studentid = bi.studentid
+WHERE bi.studentid IS NULL;
+
+21. Find students who have issued books but not returned them yet (include attributes studentid, name)
+SELECT DISTINCT s.studentid, s.name
+FROM bookissues bi
+JOIN students s ON bi.studentid = s.studentid
+WHERE bi.return_date IS NULL;
+
+22. List the books whose price greater than rupees 600 (include attributes bookid, title)
+SELECT bookid, title
+FROM books
+WHERE price > 600;
+
+
+
