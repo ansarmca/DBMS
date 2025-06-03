@@ -1,0 +1,65 @@
+24. Create a table "librarians" with the following structure:  
+   - librarianid (integer, Primary Key, auto increment)  
+   - name (varchar(50), Cannot be NULL)
+   - email (varchar(100), unique, not null)
+   - phone (varchar(10), unique, not null)
+
+CREATE TABLE librarians (
+    librarianid INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone VARCHAR(10) NOT NULL UNIQUE
+);
+
+25. Alter table "bookissues" table to:
+   - Add a column "librarianid" of type integer. 
+   - Add a foreign key constraint to refer the "librarianid" attribute to "librarians" table.
+
+-- Add the new column
+ALTER TABLE bookissues ADD COLUMN librarianid INT;
+
+-- Add the foreign key constraint
+ALTER TABLE bookissues
+ADD CONSTRAINT fk_bookissues_librarianid
+FOREIGN KEY (librarianid) REFERENCES librarians(librarianid);
+
+26. Insert the following records into the "librarians" table:
+
+   - (1, John Smith, john.smith@example.com, 9876543210)
+   - (2, Emma Brown, emma.brown@example.com, 8765432109)
+   - (3, David Wilson, david.wilson@example.com, 7654321098)
+   - (4, Franklin, franklin@example.com, 3445236778)
+
+INSERT INTO librarians (librarianid, name, email, phone) VALUES
+(1, 'John Smith', 'john.smith@example.com', '9876543210'),
+(2, 'Emma Brown', 'emma.brown@example.com', '8765432109'),
+(3, 'David Wilson', 'david.wilson@example.com', '7654321098'),
+(4, 'Franklin', 'franklin@example.com', '3445236778');
+
+27. List all book issues with student and librarian details (include attributes studend name, title, librarian name)
+SELECT 
+    s.name AS student_name,
+    b.title AS book_title,
+    l.name AS librarian_name
+FROM bookissues bi
+JOIN students s ON bi.studentid = s.studentid
+JOIN books b ON bi.bookid = b.bookid
+JOIN librarians l ON bi.librarianid = l.librarianid;
+
+28.  Count the number of books issued by each librarian (include attributes librarianid, name, total_books_issued)
+SELECT 
+    l.librarianid,
+    l.name,
+    COUNT(bi.bookid) AS total_books_issued
+FROM librarians l
+LEFT JOIN bookissues bi ON l.librarianid = bi.librarianid
+GROUP BY l.librarianid, l.name;
+
+29. Find librarians who have not issued any books (include attributes librarianid, name)
+SELECT 
+    l.librarianid,
+    l.name
+FROM librarians l
+LEFT JOIN bookissues bi ON l.librarianid = bi.librarianid
+WHERE bi.librarianid IS NULL;
+
