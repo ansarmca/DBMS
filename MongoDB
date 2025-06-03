@@ -105,7 +105,15 @@ find filters:
 
 7)composite attribute:
 ----------------------
-db.student.insertOne({rollno:4,name:"Fazil",age:23,address:{city:"Nellya",state:"Kerala]"}})
+db.student.insertOne({
+  rollno: 4,
+  name: "Fazil",
+  age: 23,
+  address: {
+    city: "Nellya",
+    state: "Kerala"
+  }
+});
 
 8)complex atribute:
 ------------------
