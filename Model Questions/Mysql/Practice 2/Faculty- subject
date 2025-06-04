@@ -1,0 +1,85 @@
+
+
+-- Question 1:
+-- Create a table faculty
+CREATE TABLE faculty (
+    fno INT AUTO_INCREMENT PRIMARY KEY,
+    fname VARCHAR(15) NOT NULL,
+    doj DATE NOT NULL CHECK (doj > '2000-01-01'),
+    specialization VARCHAR(50)
+);
+
+-- Question 2:
+-- Create a table subject
+CREATE TABLE subject (
+    sname VARCHAR(50) NOT NULL,
+    sdate DATE NOT NULL,
+    edate DATE NOT NULL,
+    roomno CHAR(4) NOT NULL,
+    fno INT,
+    PRIMARY KEY (sname, sdate),
+    FOREIGN KEY (fno) REFERENCES faculty(fno)
+);
+
+-- Question 3:
+-- Insert records into faculty
+INSERT INTO faculty (fno, fname, doj, specialization) VALUES
+(1, 'John Doe', '2020-01-15', 'Computer Science'),
+(2, 'Jane Smith', '2018-05-20', 'Mathematics'),
+(3, 'Alice Johnson', '2019-09-10', 'Physics'),
+(4, 'Bob William', '2021-03-25', 'Chemistry'),
+(5, 'Emily Brown', '2017-11-08', 'Biology'),
+(6, 'Michael Green', '2020-08-10', 'Economics');
+
+-- Question 4:
+-- Insert records into subject
+INSERT INTO subject (sname, sdate, edate, roomno, fno) VALUES
+('Introduction to Programming', '2024-01-10', '2024-05-10', 'C101', 1),
+('Linear Algebra', '2024-02-15', '2024-06-15', 'T102', 2),
+('Mechanics', '2024-06-20', '2024-10-20', 'T102', 2),
+('Mechanics', '2024-03-20', '2024-07-20', 'M103', 3),
+('Organic Chemistry', '2024-04-25', '2024-08-25', 'T104', 4),
+('Cell Biology', '2024-01-15', '2024-05-15', 'T105', 5);
+
+-- Question 5:
+-- Query 1: Faculty specialization includes 'm'
+SELECT fno, fname FROM faculty
+WHERE specialization LIKE '%m%';
+
+-- Query 2: Faculties who joined after April 01, 2024
+SELECT fno, fname FROM faculty
+WHERE doj > '2024-04-01';
+
+-- Query 3: Faculties teaching subjects starting after March 01, 2024
+SELECT DISTINCT f.fno, f.fname
+FROM faculty f
+JOIN subject s ON f.fno = s.fno
+WHERE s.sdate > '2024-03-01';
+
+-- Query 4: Subjects with faculty name and specialization, ordered by sdate
+SELECT s.sname, f.fname, f.specialization
+FROM subject s
+JOIN faculty f ON s.fno = f.fno
+ORDER BY s.sdate ASC;
+
+-- Query 5: Subjects taught by the most recently joined faculty
+SELECT f.fname, f.doj, s.sname
+FROM faculty f
+JOIN subject s ON f.fno = s.fno
+WHERE f.doj = (SELECT MAX(doj) FROM faculty);
+
+-- Query 6: Faculty not teaching any subject
+SELECT fname FROM faculty
+WHERE fno NOT IN (SELECT DISTINCT fno FROM subject);
+
+-- Query 7: Subjects with number of faculty teaching each
+SELECT sname, COUNT(DISTINCT fno) AS num_faculty
+FROM subject
+GROUP BY sname;
+
+-- Query 8: Faculty names with count of subjects taught, ordered by count
+SELECT f.fname, COUNT(s.sname) AS subject_count
+FROM faculty f
+LEFT JOIN subject s ON f.fno = s.fno
+GROUP BY f.fname
+ORDER BY subject_count DESC;
