@@ -1,0 +1,103 @@
+// Switch to or create a database
+use shopDB;
+
+// Insert multiple product documents into the 'products' collection
+db.products.insertMany([
+  {
+    product_id: "P1001",
+    name: "iPhone 14",
+    category: "Mobile",
+    price: 79999,
+    brand: "Apple",
+    stock: 15,
+    ratings: 4.5,
+    colors: ["Black", "White", "Blue"]
+  },
+  {
+    product_id: "P1002",
+    name: "Samsung Galaxy S22",
+    category: "Mobile",
+    price: 69999,
+    brand: "Samsung",
+    stock: 25,
+    ratings: 4.4,
+    colors: ["Black", "Green"]
+  },
+  {
+    product_id: "P1003",
+    name: "OnePlus 11",
+    category: "Mobile",
+    price: 59999,
+    brand: "OnePlus",
+    stock: 30,
+    ratings: 4.3,
+    colors: ["Gray", "Green"]
+  },
+  {
+    product_id: "P1004",
+    name: "MacBook Pro",
+    category: "Laptop",
+    price: 159999,
+    brand: "Apple",
+    stock: 5,
+    ratings: 4.7,
+    colors: ["Silver", "Gray"]
+  },
+  {
+    product_id: "P1005",
+    name: "HP Pavilion",
+    category: "Laptop",
+    price: 74999,
+    brand: "HP",
+    stock: 10,
+    ratings: 4.2,
+    colors: ["Silver", "Black"]
+  },
+  {
+    product_id: "P1006",
+    name: "Sony WH-1000XM5",
+    category: "Headphones",
+    price: 29999,
+    brand: "Sony",
+    stock: 20,
+    ratings: 4.6,
+    colors: ["Black"]
+  }
+]);
+
+// -----------------------------
+// 🔍 Practice Questions
+// -----------------------------
+
+// 1. Find all products in the category "Mobile"
+db.products.find({ category: "Mobile" });
+
+// 2. Find products with price greater than ₹60,000
+db.products.find({ price: { $gt: 60000 } });
+
+// 3. Find products with rating >= 4.5
+db.products.find({ ratings: { $gte: 4.5 } });
+
+// 4. Find all products of brand "Apple"
+db.products.find({ brand: "Apple" });
+
+// 5. Find all products available in "Black" color
+db.products.find({ colors: "Black" });
+
+// 6. Sort products by price in descending order
+db.products.find().sort({ price: -1 });
+
+// 7. Update the stock of "MacBook Pro" to 10
+db.products.updateOne(
+  { name: "MacBook Pro" },
+  { $set: { stock: 10 } }
+);
+
+// 8. Delete the product with product_id "P1006"
+db.products.deleteOne({ product_id: "P1006" });
+
+// 9. Count the number of products in "Laptop" category
+db.products.countDocuments({ category: "Laptop" });
+
+// 10. Find all products that are out of stock
+db.products.find({ stock: 0 });
