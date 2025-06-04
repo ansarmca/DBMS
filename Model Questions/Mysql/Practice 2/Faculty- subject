@@ -1,7 +1,23 @@
 
 
 -- Question 1:
--- Create a table faculty
+-- Create a table faculty in MySQL database with the following
+schema and constraints: 
+faculty (fno, fname, doj, specialization)
+fno (faculty number) is an integer attribute. fname (faculty name)
+is a variable length character attribute, with a maximum size of 15.
+doj (faculty joining date) is a date attribute and should not be
+empty. specialization (faculty specialization) is a variable length
+character attribute with a maximum size of 50.
+
+Constraints to set for the table faculty:
+
+1. fno is the primary key and must be an auto incrementing
+attribute
+2. fname should not be empty.
+3. doj should not be empty and must be greater than January
+01, 2000.
+
 CREATE TABLE faculty (
     fno INT AUTO_INCREMENT PRIMARY KEY,
     fname VARCHAR(15) NOT NULL,
@@ -10,7 +26,27 @@ CREATE TABLE faculty (
 );
 
 -- Question 2:
--- Create a table subject
+-- Create a table subject in MySQL database with the following
+schema and constraints: (4 Marks)
+subject (sname, sdate, edate, roomno, fno)
+sname (subject name) is a variable length character attribute with
+a maximum size of 50. sdate (start date of teaching a subject) is a
+date attribute. edate (end date of teaching a subject) is a date
+attribute. roomno (room number where the subject is taught) must
+be of a fixed length character attribute with a size of 4.
+fno (faculty number) is an integer attribute.
+
+
+Constraints to set for the table subject:
+1. sname and sdate together form the primary key.
+2. sname should not be empty.
+3. sdate shoud not be empty.
+4. edate shoud not be empty.
+5. roomno should not be empty.
+6. fno is the foreign key attribute that referes to fno attribute of
+faculty table.
+
+
 CREATE TABLE subject (
     sname VARCHAR(50) NOT NULL,
     sdate DATE NOT NULL,
@@ -66,7 +102,8 @@ ORDER BY s.sdate ASC;
 SELECT f.fname, f.doj, s.sname
 FROM faculty f
 JOIN subject s ON f.fno = s.fno
-WHERE f.doj = (SELECT MAX(doj) FROM faculty);
+ORDER BY f.doj DESC
+LIMIT 1;
 
 -- Query 6: Faculty not teaching any subject
 SELECT fname FROM faculty
@@ -83,3 +120,5 @@ FROM faculty f
 LEFT JOIN subject s ON f.fno = s.fno
 GROUP BY f.fname
 ORDER BY subject_count DESC;
+
+ 
